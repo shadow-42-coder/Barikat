@@ -23,9 +23,8 @@ margin-bottom:5px;
 
 .subtitle{
 text-align:center;
-color:#cccccc;
-margin-bottom:30px;
-font-size:22px;
+color:#ccc;
+margin-bottom:20px;
 }
 
 .player{
@@ -72,33 +71,58 @@ width:100%;
 margin-top:15px;
 }
 
+.rulesBtn{
+background:#3498db;
+color:white;
+width:100%;
+margin-top:10px;
+}
+
 #setup{
 text-align:center;
-margin:auto;
-max-width:700px;
-background:#1e1e1e;
-padding:25px;
-border-radius:15px;
+margin-bottom:20px;
 }
 
 input{
-padding:14px;
-margin:8px 0;
-font-size:18px;
+padding:10px;
+margin:5px;
+font-size:16px;
 width:90%;
-max-width:500px;
-border:none;
-border-radius:10px;
+max-width:300px;
 }
 
 #createBtn{
 background:#ffcc00;
 color:black;
 font-weight:bold;
-width:90%;
-max-width:500px;
-padding:15px;
-font-size:22px;
+}
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+z-index:999;
+}
+
+.modal-content{
+background:#1e1e1e;
+max-width:700px;
+margin:40px auto;
+padding:20px;
+border-radius:15px;
+max-height:80vh;
+overflow:auto;
+}
+
+.closeBtn{
+background:#e74c3c;
+color:white;
+width:100%;
+margin-top:15px;
 }
 </style>
 </head>
@@ -112,20 +136,96 @@ font-size:22px;
 
 <h2>Oyuncuları Gir</h2>
 
-<input id="p1" placeholder="Oyuncu 1 (Zorunlu)"><br>
-<input id="p2" placeholder="Oyuncu 2 (Zorunlu)"><br>
-<input id="p3" placeholder="Oyuncu 3 (İsteğe Bağlı)"><br>
-<input id="p4" placeholder="Oyuncu 4 (İsteğe Bağlı)"><br>
+<input id="p1" placeholder="Oyuncu 1"><br>
+<input id="p2" placeholder="Oyuncu 2"><br>
+<input id="p3" placeholder="Oyuncu 3 (isteğe bağlı)"><br>
+<input id="p4" placeholder="Oyuncu 4 (isteğe bağlı)"><br>
 
 <button id="createBtn" onclick="createPlayers()">
 OYUNU BAŞLAT
+</button>
+
+<button class="rulesBtn" onclick="openRules()">
+📜 Kurallar
 </button>
 
 </div>
 
 <div id="game"></div>
 
+<div id="rulesModal" class="modal">
+
+<div class="modal-content">
+
+<h2>📜 SEVEN Kuralları</h2>
+
+<p>❤️ Başlangıç Canı: 7</p>
+<p>🛡️ Maksimum Kalkan: 3</p>
+
+<hr>
+
+<p>🎴 Her oyuncu 5 kartla başlar.</p>
+
+<p>🔄 Turunda en fazla 2 kart oynayabilirsin.</p>
+
+<p>🎴 Tur sonunda 2 kart çekersin.</p>
+
+<hr>
+
+<p>🧟 Zombi</p>
+<p>• 1 Can</p>
+<p>• 1 Hasar</p>
+
+<p>👹 Dev Zombi</p>
+<p>• 2 Can</p>
+<p>• 2 Hasar</p>
+
+<hr>
+
+<p>⚡ Elektrikli Tel</p>
+<p>• Küçük zombiyi anında öldürür.</p>
+<p>• Dev zombinin canını 1'e düşürür.</p>
+<p>• Dev zombinin hasarını 1'e düşürür.</p>
+
+<hr>
+
+<p>❤️ Tamir</p>
+<p>• +1 Can verir.</p>
+<p>• Can 7'nin üstüne çıkamaz.</p>
+
+<p>🛡️ Kalkan</p>
+<p>• +1 Kalkan verir.</p>
+<p>• Kalkan 3'ün üstüne çıkamaz.</p>
+
+<hr>
+
+<p>🏆 Herkes Tek Modu</p>
+<p>Son ayakta kalan oyuncu kazanır.</p>
+
+<hr>
+
+<p>🤝 Takım Modu</p>
+<p>A + C takım</p>
+<p>B + D takım</p>
+<p>Takımdan herhangi biri elenirse takım kaybeder.</p>
+
+<button class="closeBtn" onclick="closeRules()">
+Kapat
+</button>
+
+</div>
+
+</div>
+
 <script>
+
+function openRules(){
+document.getElementById("rulesModal").style.display="block";
+}
+
+function closeRules(){
+document.getElementById("rulesModal").style.display="none";
+}
 
 function createPlayers(){
 
@@ -146,7 +246,6 @@ let html="";
 names.forEach((name,index)=>{
 
 html+=`
-
 <div class="player">
 
 <div class="name">${name}</div>
@@ -156,13 +255,11 @@ html+=`
 <span id="hp${index}">7</span>
 </div>
 
-<button class="plus"
-onclick="change('hp${index}',1)">
+<button class="plus" onclick="change('hp${index}',1)">
 +1 Can
 </button>
 
-<button class="minus"
-onclick="change('hp${index}',-1)">
+<button class="minus" onclick="change('hp${index}',-1)">
 -1 Can
 </button>
 
@@ -171,27 +268,26 @@ onclick="change('hp${index}',-1)">
 <span id="shield${index}">0</span>
 </div>
 
-<button class="plus"
-onclick="change('shield${index}',1)">
+<button class="plus" onclick="change('shield${index}',1)">
 +1 Kalkan
 </button>
 
-<button class="minus"
-onclick="change('shield${index}',-1)">
+<button class="minus" onclick="change('shield${index}',-1)">
 -1 Kalkan
 </button>
 
 </div>
-
 `;
 });
 
 html+=`
+<button class="rulesBtn" onclick="openRules()">
+📜 Kurallar
+</button>
 
 <button class="reset" onclick="location.reload()">
 Yeni Oyun
 </button>
-
 `;
 
 document.getElementById('setup').style.display='none';
