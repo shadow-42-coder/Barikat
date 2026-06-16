@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEVEN Companion</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#121212;
+color:white;
+margin:0;
+padding:20px;
+}
+
+h1{
+text-align:center;
+color:#ffcc00;
+}
+
+.player{
+background:#1e1e1e;
+padding:15px;
+margin:10px 0;
+border-radius:12px;
+}
+
+.name{
+font-size:22px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.stat{
+font-size:20px;
+margin:8px 0;
+}
+
+button{
+padding:10px 15px;
+margin:4px;
+border:none;
+border-radius:8px;
+font-size:18px;
+cursor:pointer;
+}
+
+.plus{
+background:#27ae60;
+color:white;
+}
+
+.minus{
+background:#c0392b;
+color:white;
+}
+
+.reset{
+background:#f39c12;
+color:white;
+width:100%;
+margin-top:15px;
+}
+
+#setup{
+text-align:center;
+margin-bottom:20px;
+}
+
+input{
+padding:10px;
+margin:5px;
+font-size:16px;
+width:90%;
+max-width:300px;
+}
+
+#createBtn{
+background:#3498db;
+color:white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>SEVEN</h1>
+
+<div id="setup">
+
+<h2>Oyuncuları Gir</h2>
+
+<input id="p1" placeholder="Oyuncu 1"><br>
+<input id="p2" placeholder="Oyuncu 2"><br>
+<input id="p3" placeholder="Oyuncu 3 (isteğe bağlı)"><br>
+<input id="p4" placeholder="Oyuncu 4 (isteğe bağlı)"><br>
+
+<button id="createBtn" onclick="createPlayers()">
+Oyunu Başlat
+</button>
+
+</div>
+
+<div id="game"></div>
+
+<script>
+
+function createPlayers(){
+
+const names=[
+document.getElementById('p1').value,
+document.getElementById('p2').value,
+document.getElementById('p3').value,
+document.getElementById('p4').value
+].filter(x=>x.trim()!="");
+
+if(names.length<2){
+alert("En az 2 oyuncu gerekli");
+return;
+}
+
+let html="";
+
+names.forEach((name,index)=>{
+
+html+=`
+<div class="player">
+
+<div class="name">${name}</div>
+
+<div class="stat">
+❤️ Can:
+<span id="hp${index}">7</span>
+</div>
+
+<button class="plus"
+onclick="change('hp${index}',1)">
++1 Can
+</button>
+
+<button class="minus"
+onclick="change('hp${index}',-1)">
+-1 Can
+</button>
+
+<div class="stat">
+🛡️ Kalkan:
+<span id="shield${index}">0</span>
+</div>
+
+<button class="plus"
+onclick="change('shield${index}',1)">
++1 Kalkan
+</button>
+
+<button class="minus"
+onclick="change('shield${index}',-1)">
+-1 Kalkan
+</button>
+
+</div>
+`;
+});
+
+html+=`
+<button class="reset" onclick="location.reload()">
+Yeni Oyun
+</button>
+`;
+
+document.getElementById('setup').style.display='none';
+document.getElementById('game').innerHTML=html;
+
+}
+
+function change(id,val){
+
+let current=parseInt(document.getElementById(id).innerText);
+
+current+=val;
+
+if(id.includes("shield")){
+if(current<0) current=0;
+if(current>3) current=3;
+}
+
+if(id.includes("hp")){
+if(current<0) current=0;
+}
+
+document.getElementById(id).innerText=current;
+
+}
+</script>
+
+</body>
+</html>
