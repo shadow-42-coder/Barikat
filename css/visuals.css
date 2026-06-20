@@ -1,0 +1,514 @@
+/* ===== BARİKAT KART GÖRSELLERİ — SVG ile üretilmiş ===== */
+
+/* Her kartın SVG arka planı */
+.card { position: relative; overflow: hidden; }
+.card-inner {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  padding: 4px;
+}
+.card-svg-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.card-emoji { font-size: 28px; line-height: 1; position: relative; z-index: 2; }
+.card-name {
+  font-size: 9px; font-weight: 700; text-align: center;
+  line-height: 1.2; position: relative; z-index: 2;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  max-width: 80px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+/* Kart arka plan temaları */
+.card-attack .card-svg-bg { background: linear-gradient(145deg, #2a0a0a, #1a0505); }
+.card-attack .card-name { color: #ff8080; }
+.card-defense .card-svg-bg { background: linear-gradient(145deg, #0a1a2a, #050f1a); }
+.card-defense .card-name { color: #80b4ff; }
+.card-summon .card-svg-bg { background: linear-gradient(145deg, #0a2a0a, #051505); }
+.card-summon .card-name { color: #80ff80; }
+.card-special .card-svg-bg { background: linear-gradient(145deg, #1a0a2a, #0d051a); }
+.card-special .card-name { color: #c080ff; }
+
+/* Kart kenar süslemesi */
+.card::before {
+  content: '';
+  position: absolute; inset: 3px;
+  border-radius: 9px;
+  border: 1px solid rgba(255,255,255,0.06);
+  pointer-events: none;
+  z-index: 1;
+}
+/* Köşe rozetleri */
+.card-corner {
+  position: absolute;
+  top: 5px; left: 5px;
+  font-size: 10px;
+  opacity: 0.6;
+  z-index: 3;
+  line-height: 1;
+}
+.card-corner-br {
+  position: absolute;
+  bottom: 5px; right: 5px;
+  font-size: 10px;
+  opacity: 0.6;
+  z-index: 3;
+  line-height: 1;
+  transform: rotate(180deg);
+}
+
+/* ===== OYUN MASASI SVG STİLLERİ ===== */
+#gameScene {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+#playerPanelsContainer {
+  position: absolute; inset: 0;
+  overflow: hidden;
+}
+
+/* Masa arka planı — SVG ile çizilmiş yeşil kumarhane masası */
+.game-table-svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Oyuncu paneli — masa üzerinde profillerle */
+.panel {
+  background: rgba(8,14,26,0.88);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+}
+.panel-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a5f, #0f2040);
+  border: 2px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: all 0.25s;
+}
+.panel.active-turn .panel-avatar {
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(245,201,77,0.45), 0 4px 12px rgba(0,0,0,0.4);
+}
+.panel.mine .panel-avatar,
+.panel .panel-name span[style*="--gold"] {
+  border-color: var(--gold);
+}
+
+/* Avatar + can/kalkan rozetleri — lobi koltuk stiline benzer */
+.seat-avatar-wrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+.panel-hp-badge, .panel-shield-badge {
+  position: absolute;
+  display: flex; align-items: center; gap: 2px;
+  font-size: 10px; font-weight: 700;
+  background: rgba(10,16,28,0.95);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+.panel-hp-badge { top: -6px; right: -14px; border-color: rgba(231,76,60,0.5); }
+.panel-shield-badge { bottom: -6px; right: -14px; border-color: rgba(52,152,219,0.5); }
+
+.panel-timer-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text2);
+  width: 100%;
+}
+.panel-timer-row .timer-wrap { flex: 1; }
+
+.panel-header {
+  display: flex; align-items: center; margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 5px;
+}
+.panel-name { font-size: 12px; font-weight: 700; text-align: center; margin-bottom: 6px; }
+.panel-vip { font-size: 9px; color: var(--gold); margin-left: 4px; }
+
+/* Kart oynama alanı — masanın ortasında */
+.play-zone {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(320px, 70%);
+  height: 120px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px;
+  z-index: 5;
+}
+.played-card-slot {
+  width: 60px; height: 84px;
+  border: 1px dashed rgba(245,201,77,0.2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: rgba(255,255,255,0.1);
+  transition: all 0.3s;
+}
+.played-card-slot.has-card {
+  border-color: rgba(245,201,77,0.5);
+  background: rgba(245,201,77,0.05);
+}
+
+/* ===== PANEL STİL GELİŞTİRME ===== */
+.panel h2 { 
+  display: flex; align-items: center; 
+  font-size: 12px; font-weight: 700; 
+  margin-bottom: 5px; 
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ===== GÜNLÜK GİRİŞ TAKVİMİ ===== */
+.daily-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin: 12px 0;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s;
+  position: relative;
+  border: 1px solid transparent;
+}
+.cal-day.claimed {
+  background: rgba(46,204,113,0.15);
+  border-color: rgba(46,204,113,0.3);
+  color: var(--green);
+}
+.cal-day.today {
+  background: rgba(245,201,77,0.15);
+  border-color: var(--gold);
+  color: var(--gold);
+  animation: calPulse 1.5s ease-in-out infinite;
+}
+.cal-day.locked {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.2);
+}
+.cal-day.special {
+  background: rgba(231,76,60,0.15);
+  border-color: rgba(231,76,60,0.4);
+  color: #ff8080;
+}
+.cal-day.mega {
+  background: rgba(155,89,182,0.2);
+  border-color: rgba(155,89,182,0.5);
+  color: #c080ff;
+}
+@keyframes calPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(245,201,77,0.3); }
+  50% { box-shadow: 0 0 0 4px rgba(245,201,77,0.15); }
+}
+.cal-day .cal-reward { font-size: 14px; line-height: 1; margin-bottom: 1px; }
+.cal-day .cal-num { font-size: 9px; opacity: 0.7; }
+
+/* ===== GÖREV SİSTEMİ ===== */
+.quest-tabs {
+  display: flex; gap: 4px;
+  margin-bottom: 14px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 3px;
+}
+.quest-tab {
+  flex: 1; padding: 8px 4px;
+  border: none; border-radius: 8px;
+  background: transparent; color: var(--text2);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Rajdhani', sans-serif;
+}
+.quest-tab.active {
+  background: rgba(245,201,77,0.15);
+  color: var(--gold);
+}
+.quest-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: border-color 0.2s;
+}
+.quest-item:hover { border-color: rgba(245,201,77,0.2); }
+.quest-icon { font-size: 22px; flex-shrink: 0; }
+.quest-info { flex: 1; }
+.quest-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.quest-desc { font-size: 12px; color: var(--text2); }
+.quest-progress-bar {
+  height: 4px; background: rgba(255,255,255,0.08);
+  border-radius: 2px; margin-top: 5px; overflow: hidden;
+}
+.quest-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 2px; transition: width 0.5s; }
+.quest-rewards { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.quest-reward-pill {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 999px;
+}
+.quest-reward-pill.gold { background: rgba(245,201,77,0.15); color: var(--gold); }
+.quest-reward-pill.gem { background: rgba(52,152,219,0.15); color: #87ceeb; }
+.quest-reward-pill.xp { background: rgba(155,89,182,0.15); color: #c080ff; }
+.btn-claim {
+  background: linear-gradient(135deg, var(--green), #27ae60);
+  color: #fff; border: none; border-radius: 8px;
+  padding: 6px 12px; font-size: 12px; font-weight: 700;
+  cursor: pointer; font-family: 'Rajdhani', sans-serif;
+  white-space: nowrap;
+}
+.btn-claim:disabled { background: rgba(255,255,255,0.1); color: var(--text2); cursor: not-allowed; }
+.quest-claimed { font-size: 18px; }
+
+/* ===== HEDİYE/STİKER SİSTEMİ ===== */
+.gift-panel {
+  position: fixed;
+  bottom: 170px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+  z-index: 200;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  width: min(340px, 90vw);
+}
+.gift-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 6px; margin-top: 10px;
+}
+.gift-item {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 6px 4px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s;
+}
+.gift-item:hover { border-color: rgba(245,201,77,0.4); background: rgba(245,201,77,0.06); transform: scale(1.05); }
+.gift-emoji { font-size: 22px; margin-bottom: 2px; }
+.gift-cost { font-size: 10px; color: var(--text2); font-weight: 600; }
+.gift-cost.gem { color: #87ceeb; }
+
+/* Hediye animasyonu */
+@keyframes giftFly {
+  0% { transform: translate(var(--fx), var(--fy)) scale(0.5); opacity: 0; }
+  30% { transform: translate(calc(var(--fx)*0.6), calc(var(--fy)*0.4)) scale(1.3); opacity: 1; }
+  70% { transform: translate(calc(var(--fx)*0.2), calc(var(--fy)*0.1)) scale(1.1); opacity: 1; }
+  100% { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+.gift-fly {
+  position: fixed;
+  font-size: 36px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: giftFly 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Hediye — gerçek hedefe (oyuncu paneline) doğru uçar */
+.gift-fly-target {
+  position: fixed;
+  font-size: 38px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(0,0) scale(1.4);
+  opacity: 1;
+  transition: transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.75s ease-in;
+  filter: drop-shadow(0 0 10px rgba(245,201,77,0.6));
+}
+.gift-burst {
+  position: fixed;
+  font-size: 30px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  animation: giftBurst 0.7s ease-out forwards;
+}
+@keyframes giftBurst {
+  0%   { transform: translate(-50%,-50%) scale(0.6); opacity: 1; filter: drop-shadow(0 0 0px rgba(245,201,77,0.8)); }
+  40%  { transform: translate(-50%,-50%) scale(1.8); opacity: 1; filter: drop-shadow(0 0 18px rgba(245,201,77,0.9)); }
+  100% { transform: translate(-50%,-50%) scale(2.4); opacity: 0; filter: drop-shadow(0 0 0px rgba(245,201,77,0)); }
+}
+/* Toast'ta görünen hediye bildirimi */
+.gift-received {
+  position: fixed; top: 80px; right: 16px;
+  background: rgba(15,21,32,0.95);
+  border: 1px solid rgba(245,201,77,0.3);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  z-index: 8000;
+  animation: slideInRight 0.3s ease, fadeOut 0.3s ease 3s forwards;
+}
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(120%); }
+}
+.gift-recv-emoji { font-size: 28px; }
+.gift-recv-text { font-size: 13px; }
+.gift-recv-from { font-weight: 700; color: var(--gold); }
+
+/* ===== VIP SİSTEMİ ===== */
+.vip-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px; border-radius: 999px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.vip-0 { background: rgba(255,255,255,0.08); color: var(--text2); }
+.vip-1 { background: rgba(52,152,219,0.2); color: #87ceeb; border: 1px solid rgba(52,152,219,0.4); }
+.vip-2 { background: rgba(46,204,113,0.2); color: #80ff80; border: 1px solid rgba(46,204,113,0.4); }
+.vip-3 { background: rgba(155,89,182,0.2); color: #c080ff; border: 1px solid rgba(155,89,182,0.4); }
+.vip-4 { background: rgba(231,76,60,0.2); color: #ff8080; border: 1px solid rgba(231,76,60,0.4); }
+.vip-5 { background: linear-gradient(135deg, rgba(245,201,77,0.3), rgba(241,162,26,0.3)); color: var(--gold); border: 1px solid rgba(245,201,77,0.6); }
+
+/* ===== EKSTRİ RESPONSIVE ===== */
+@media (max-width: 599px) {
+  .daily-calendar { grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .cal-day { border-radius: 5px; }
+  .cal-day .cal-reward { font-size: 12px; }
+  .gift-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .quest-rewards { flex-wrap: wrap; }
+}
+
+/* ===== MAĞAZA ===== */
+.shop-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.shop-item:hover { border-color: rgba(245,201,77,0.4); transform: translateY(-2px); }
+.shop-gem-icon { font-size: 20px; font-weight: 700; color: #87ceeb; margin-bottom: 6px; }
+.shop-icon { font-size: 28px; margin-bottom: 6px; }
+.shop-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.shop-desc { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+.shop-price { font-size: 13px; font-weight: 700; color: var(--gold); }
+.shop-price.gem { color: #87ceeb; }
+.shop-badge {
+  position: absolute; top: -6px; right: 8px;
+  background: var(--green); color: #fff;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 999px;
+}
+
+/* ===== SVG KART KÖŞELERİ ===== */
+.card-pip-tl { position:absolute; top:4px; left:5px; font-size:9px; z-index:3; opacity:0.7; }
+.card-pip-br { position:absolute; bottom:4px; right:5px; font-size:9px; z-index:3; opacity:0.7; transform:rotate(180deg); }
+
+/* Oyun masası SVG arka planı */
+#playerPanelsContainer {
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 50%, rgba(20,80,40,0.6) 0%, transparent 70%),
+    url('img/sahne.png') center/cover;
+}
+
+/* Oyun içi kart oynama merkezi göstergesi */
+.center-played-card {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 54px; height: 76px;
+  pointer-events: none;
+  z-index: 10;
+  animation: centerCardPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes centerCardPop {
+  from { transform: translate(-50%,-50%) scale(0.3) rotate(15deg); opacity: 0; }
+  to { transform: translate(-50%,-50%) scale(1) rotate(0); opacity: 1; }
+}
+
+/* ===== PROFİL ÇERÇEVELERİ (Mağaza > Çerçeve) ===== */
+/* Bu sınıf avatarı saran elemana eklenir: profileAvatarBig, menuAvatar, panel-avatar, vpAvatar */
+.frame-blue    { box-shadow: 0 0 0 3px #3498db, 0 0 14px rgba(52,152,219,0.6) !important; border-color: #3498db !important; }
+.frame-green   { box-shadow: 0 0 0 3px #2ecc71, 0 0 14px rgba(46,204,113,0.6) !important; border-color: #2ecc71 !important; }
+.frame-purple  { box-shadow: 0 0 0 3px #9b59b6, 0 0 14px rgba(155,89,182,0.6) !important; border-color: #9b59b6 !important; }
+.frame-red     { box-shadow: 0 0 0 3px #e74c3c, 0 0 14px rgba(231,76,60,0.6) !important; border-color: #e74c3c !important; }
+.frame-gold    { box-shadow: 0 0 0 3px #f5c94d, 0 0 16px rgba(245,201,77,0.7) !important; border-color: #f5c94d !important; }
+.frame-diamond { box-shadow: 0 0 0 3px #87ceeb, 0 0 18px rgba(135,206,235,0.8) !important; border-color: #87ceeb !important; animation: frameShimmer 2s ease-in-out infinite; }
+.frame-flame   { box-shadow: 0 0 0 3px #ff6b1a, 0 0 18px rgba(255,107,26,0.8) !important; border-color: #ff6b1a !important; animation: frameFlame 1.2s ease-in-out infinite; }
+.frame-rainbow { box-shadow: 0 0 0 3px transparent, 0 0 18px rgba(255,255,255,0.5) !important; animation: frameRainbow 3s linear infinite; }
+@keyframes frameShimmer {
+  0%,100% { filter: brightness(1); }
+  50% { filter: brightness(1.4); }
+}
+@keyframes frameFlame {
+  0%,100% { box-shadow: 0 0 0 3px #ff6b1a, 0 0 14px rgba(255,107,26,0.7); }
+  50% { box-shadow: 0 0 0 3px #ffae42, 0 0 24px rgba(255,107,26,1); }
+}
+@keyframes frameRainbow {
+  0%   { box-shadow: 0 0 0 3px #ff4d4d, 0 0 16px rgba(255,77,77,0.7); }
+  20%  { box-shadow: 0 0 0 3px #ffae42, 0 0 16px rgba(255,174,66,0.7); }
+  40%  { box-shadow: 0 0 0 3px #f5e642, 0 0 16px rgba(245,230,66,0.7); }
+  60%  { box-shadow: 0 0 0 3px #42f587, 0 0 16px rgba(66,245,135,0.7); }
+  80%  { box-shadow: 0 0 0 3px #429bf5, 0 0 16px rgba(66,155,245,0.7); }
+  100% { box-shadow: 0 0 0 3px #ff4d4d, 0 0 16px rgba(255,77,77,0.7); }
+}
+
+/* ===== KART SKİNLERİ (Mağaza > Kart Skin) — buildCardElement override ===== */
+.card-skin-dark .card-svg-bg rect:first-child      { fill: #0a0a0a !important; }
+.card-skin-gold      { border-color: #f5c94d !important; box-shadow: 0 0 10px rgba(245,201,77,0.35); }
+.card-skin-hologram  { box-shadow: 0 0 14px rgba(135,206,235,0.5); animation: frameShimmer 1.6s ease-in-out infinite; }
+.card-skin-blood     { border-color: #e74c3c !important; box-shadow: 0 0 10px rgba(231,76,60,0.35); }
+.card-skin-galaxy    { box-shadow: 0 0 14px rgba(155,89,182,0.45); }
+.card-skin-dragon    { border-color: #ff6b1a !important; box-shadow: 0 0 14px rgba(255,107,26,0.5); animation: frameFlame 1.4s ease-in-out infinite; }
+.card-skin-legendary { border-color: #f5c94d !important; box-shadow: 0 0 16px rgba(245,201,77,0.6); animation: frameRainbow 4s linear infinite; }
+
+/* ===== MASA TEMALARI (Mağaza > Tema) ===== */
+#playerPanelsContainer.bg-theme-dungeon {
+  background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(60,40,20,0.5) 0%, transparent 70%), url('../img/sahne.png') center/cover, linear-gradient(rgba(20,10,5,0.4), rgba(20,10,5,0.4));
+}
+#playerPanelsContainer.bg-theme-graveyard {
+  background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(40,40,55,0.55) 0%, transparent 70%), url('../img/sahne.png') center/cover, linear-gradient(rgba(10,10,18,0.5), rgba(10,10,18,0.5));
+}
+#playerPanelsContainer.bg-theme-wasteland {
+  background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(90,70,30,0.5) 0%, transparent 70%), url('../img/sahne.png') center/cover, linear-gradient(rgba(25,18,5,0.4), rgba(25,18,5,0.4));
+}
+#playerPanelsContainer.bg-theme-city {
+  background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(30,30,40,0.6) 0%, transparent 70%), url('../img/sahne.png') center/cover, linear-gradient(rgba(5,8,15,0.5), rgba(5,8,15,0.5));
+}
+#playerPanelsContainer.bg-theme-forest {
+  background: radial-gradient(ellipse 55% 45% at 50% 50%, rgba(15,50,25,0.55) 0%, transparent 70%), url('../img/sahne.png') center/cover, linear-gradient(rgba(4,15,8,0.45), rgba(4,15,8,0.45));
+}
+
+/* ===== AKTİF EFEKTLER (Mağaza > Efektler) ===== */
+/* Masada oynanan kartta (.cpc-emoji) ve elimdeki kartlarda (img/span) AYNI parlama — tek kaynaktan */
+.effect-fire .cpc-emoji, .hand-effect-fire img, .hand-effect-fire span             { filter: drop-shadow(0 0 10px #ff6b1a) drop-shadow(0 0 4px #ffae42); }
+.effect-lightning .cpc-emoji, .hand-effect-lightning img, .hand-effect-lightning span { filter: drop-shadow(0 0 10px #f5e642) drop-shadow(0 0 4px #fff); }
+.effect-gold_glow .cpc-emoji, .hand-effect-gold_glow img, .hand-effect-gold_glow span { filter: drop-shadow(0 0 12px #f5c94d); }
+.effect-dark .cpc-emoji, .hand-effect-dark img, .hand-effect-dark span             { filter: drop-shadow(0 0 10px #9b59b6) drop-shadow(0 0 4px #2c0a3a); }
+.effect-ice .cpc-emoji, .hand-effect-ice img, .hand-effect-ice span                { filter: drop-shadow(0 0 10px #87ceeb) drop-shadow(0 0 4px #d9f4ff); }
+.effect-zombie .cpc-emoji, .hand-effect-zombie img, .hand-effect-zombie span       { filter: drop-shadow(0 0 10px #2ecc71); }
+.effect-blood .cpc-emoji, .hand-effect-blood img, .hand-effect-blood span          { filter: drop-shadow(0 0 10px #e74c3c); }
+.effect-star .cpc-emoji, .hand-effect-star img, .hand-effect-star span            { filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 6px #f5c94d); }
+.effect-rainbow .cpc-emoji, .hand-effect-rainbow img, .hand-effect-rainbow span    { animation: frameRainbow 1.5s linear infinite; }
+.effect-dragon .cpc-emoji, .hand-effect-dragon img, .hand-effect-dragon span       { filter: drop-shadow(0 0 14px #ff6b1a) drop-shadow(0 0 6px #ffae42); }
+.effect-nuke .cpc-emoji, .hand-effect-nuke img, .hand-effect-nuke span            { filter: drop-shadow(0 0 16px #2ecc71) drop-shadow(0 0 6px #f5e642); }
+.effect-god .cpc-emoji, .hand-effect-god img, .hand-effect-god span               { filter: drop-shadow(0 0 16px #f5c94d) drop-shadow(0 0 8px #fff); animation: frameShimmer 1s ease-in-out infinite; }
